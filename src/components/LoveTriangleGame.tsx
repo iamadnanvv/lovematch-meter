@@ -1,13 +1,16 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { WelcomeScreen } from './WelcomeScreen';
 import { PlayerSetup } from './PlayerSetup';
+import { CategorySelection } from './CategorySelection';
 import { QuestionCard } from './QuestionCard';
 import { ResultsScreen } from './ResultsScreen';
 import { FloatingHearts } from './FloatingHearts';
-import { questions } from '@/data/questions';
+import { MusicControl } from './MusicControl';
+import { questionCategories, Question } from '@/data/questions';
+import { useBackgroundMusic } from '@/hooks/useBackgroundMusic';
 
-type GameState = 'welcome' | 'setup' | 'playing' | 'results';
+type GameState = 'welcome' | 'setup' | 'categories' | 'playing' | 'results';
 
 interface PlayerAnswers {
   player1: (number | null)[];
@@ -18,11 +21,36 @@ export function LoveTriangleGame() {
   const [gameState, setGameState] = useState<GameState>('welcome');
   const [player1Name, setPlayer1Name] = useState('');
   const [player2Name, setPlayer2Name] = useState('');
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(['classic']);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [questions, setQuestions] = useState<Question[]>([]);
   const [answers, setAnswers] = useState<PlayerAnswers>({
-    player1: Array(questions.length).fill(null),
-    player2: Array(questions.length).fill(null)
+    player1: [],
+    player2: []
   });
+  
+  const music = useBackgroundMusic();
+
+  // Get all selected questions
+  useEffect(() => {
+    const selectedQuestions = questionCategories
+      .filter(cat => selectedCategories.includes(cat.id))
+      .flatMap(cat => cat.questions);
+    setQuestions(selectedQuestions);
+    setAnswers({
+      player1: Array(selectedQuestions.length).fill(null),
+      player2: Array(selectedQuestions.length).fill(null)
+    });
+  }, [selectedCategories]);
+
+  // Update music intensity based on match rate
+  useEffect(() => {
+    if (gameState === 'playing' && questions.length > 0) {
+      const matchCount = getCurrentMatchCount();
+      const matchRate = matchCount / (currentQuestionIndex + 1);
+      music.updateIntensity(matchRate);
+    }
+  }, [currentQuestionIndex, answers, gameState]);
 
   const handleStartGame = () => {
     setGameState('setup');
@@ -31,7 +59,22 @@ export function LoveTriangleGame() {
   const handleSetupComplete = (p1: string, p2: string) => {
     setPlayer1Name(p1);
     setPlayer2Name(p2);
+    setGameState('categories');
+  };
+
+  const handleToggleCategory = (categoryId: string) => {
+    setSelectedCategories(prev => {
+      if (prev.includes(categoryId)) {
+        return prev.filter(id => id !== categoryId);
+      }
+      return [...prev, categoryId];
+    });
+  };
+
+  const handleStartQuiz = () => {
+    setCurrentQuestionIndex(0);
     setGameState('playing');
+    music.play('low');
   };
 
   const handlePlayer1Answer = (answerIndex: number) => {
@@ -55,6 +98,7 @@ export function LoveTriangleGame() {
       setCurrentQuestionIndex(prev => prev + 1);
     } else {
       setGameState('results');
+      music.pause();
     }
   };
 
@@ -74,16 +118,29 @@ export function LoveTriangleGame() {
     setGameState('welcome');
     setPlayer1Name('');
     setPlayer2Name('');
+    setSelectedCategories(['classic']);
     setCurrentQuestionIndex(0);
+    setQuestions([]);
     setAnswers({
-      player1: Array(questions.length).fill(null),
-      player2: Array(questions.length).fill(null)
+      player1: [],
+      player2: []
     });
+    music.pause();
   };
 
   return (
     <div className="relative">
       <FloatingHearts />
+      
+      {/* Music Control - show after welcome */}
+      {gameState !== 'welcome' && (
+        <MusicControl
+          isPlaying={music.isPlaying}
+          isMuted={music.isMuted}
+          onToggle={music.toggle}
+          onToggleMute={music.toggleMute}
+        />
+      )}
       
       <AnimatePresence mode="wait">
         {gameState === 'welcome' && (
@@ -97,8 +154,21 @@ export function LoveTriangleGame() {
             onBack={() => setGameState('welcome')}
           />
         )}
+
+        {gameState === 'categories' && (
+          <CategorySelection
+            key="categories"
+            categories={questionCategories}
+            selectedCategories={selectedCategories}
+            onToggleCategory={handleToggleCategory}
+            onStart={handleStartQuiz}
+            onBack={() => setGameState('setup')}
+            player1Name={player1Name}
+            player2Name={player2Name}
+          />
+        )}
         
-        {gameState === 'playing' && (
+        {gameState === 'playing' && questions.length > 0 && (
           <QuestionCard
             key={`question-${currentQuestionIndex}`}
             question={questions[currentQuestionIndex]}
@@ -123,6 +193,7 @@ export function LoveTriangleGame() {
             matchCount={calculateMatchCount()}
             totalQuestions={questions.length}
             onPlayAgain={handlePlayAgain}
+            selectedCategories={selectedCategories}
           />
         )}
       </AnimatePresence>
