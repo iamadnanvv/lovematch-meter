@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, Share2, RotateCcw, Sparkles, Download, Image, X, Loader2 } from 'lucide-react';
 import { getCompatibilityLevel, questionCategories } from '@/data/questions';
@@ -6,6 +6,8 @@ import { LoveMeter } from './LoveMeter';
 import { HeartbeatAnimation } from './HeartbeatAnimation';
 import { useGenerateResultCard } from '@/hooks/useGenerateResultCard';
 import logoImage from '@/assets/love-triangle-logo.png';
+import { CelebrationConfetti } from '@/components/results/CelebrationConfetti';
+import { DonationDialog } from '@/components/results/DonationDialog';
 
 interface ResultsScreenProps {
   player1Name: string;
@@ -27,6 +29,8 @@ export function ResultsScreen({
   const score = Math.round((matchCount / totalQuestions) * 100);
   const compatibility = getCompatibilityLevel(score);
   const [showImageModal, setShowImageModal] = useState(false);
+
+  const shouldCelebrate = score >= 80;
   
   const { 
     isGenerating, 
@@ -42,6 +46,8 @@ export function ResultsScreen({
     .map(id => questionCategories.find(c => c.id === id)?.name)
     .filter(Boolean)
     .join(', ');
+
+  const donationLink = useMemo(() => 'https://razorpay.me/@adnan4402', []);
 
   const handleShare = async () => {
     const shareText = `💕 ${player1Name} & ${player2Name} scored ${score}% on Love Triangle! ${compatibility.emoji}\n\n${compatibility.title} - ${compatibility.message}\n\nCategories: ${categoryNames}\n\nPlay now: `;
@@ -110,6 +116,9 @@ export function ResultsScreen({
           animate={{ scale: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
+          {/* Celebration overlay (reduced-motion safe) */}
+          <CelebrationConfetti active={shouldCelebrate} />
+
           {/* Decorative elements */}
           <div className="absolute -top-4 -left-4 w-24 h-24 bg-primary/10 rounded-full blur-2xl" />
           <div className="absolute -bottom-4 -right-4 w-32 h-32 bg-accent/10 rounded-full blur-2xl" />
@@ -259,6 +268,9 @@ export function ResultsScreen({
                 Create Shareable Card
               </span>
             </motion.button>
+
+              {/* Donation */}
+              <DonationDialog href={donationLink} player1Name={player1Name} player2Name={player2Name} />
 
             <div className="flex gap-3">
               <motion.button
