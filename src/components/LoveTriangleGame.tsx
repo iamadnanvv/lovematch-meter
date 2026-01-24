@@ -53,6 +53,8 @@ export function LoveTriangleGame() {
   }, [currentQuestionIndex, answers, gameState]);
 
   const handleStartGame = () => {
+    // Start ambient music as soon as the user starts the game (user gesture required for autoplay).
+    music.play('low');
     setGameState('setup');
   };
 
