@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      quiz_sessions: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          id: string
+          player1_answers: number[]
+          player1_name: string
+          player2_answers: number[] | null
+          player2_name: string | null
+          selected_categories: string[]
+          share_code: string
+          status: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          player1_answers?: number[]
+          player1_name: string
+          player2_answers?: number[] | null
+          player2_name?: string | null
+          selected_categories?: string[]
+          share_code: string
+          status?: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          player1_answers?: number[]
+          player1_name?: string
+          player2_answers?: number[] | null
+          player2_name?: string | null
+          selected_categories?: string[]
+          share_code?: string
+          status?: string
+        }
+        Relationships: []
+      }
       supporter_events: {
         Row: {
           created_at: string

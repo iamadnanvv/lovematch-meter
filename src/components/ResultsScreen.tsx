@@ -6,9 +6,12 @@ import { LoveMeter } from './LoveMeter';
 import { HeartbeatAnimation } from './HeartbeatAnimation';
 import { useGenerateResultCard } from '@/hooks/useGenerateResultCard';
 import logoImage from '@/assets/love-triangle-logo.png';
-import { CelebrationConfetti } from '@/components/results/CelebrationConfetti';
+import { CelebrationEffects } from '@/components/results/CelebrationEffects';
 import { DonationDialog } from '@/components/results/DonationDialog';
 import { ShareCaptionGenerator } from '@/components/results/ShareCaptionGenerator';
+import { ValentineLetter } from '@/components/results/ValentineLetter';
+import { SurpriseGift } from '@/components/results/SurpriseGift';
+import { PlayWithFriend } from '@/components/results/PlayWithFriend';
 
 interface ResultsScreenProps {
   player1Name: string;
@@ -17,6 +20,7 @@ interface ResultsScreenProps {
   totalQuestions: number;
   onPlayAgain: () => void;
   selectedCategories: string[];
+  player1Answers?: number[];
 }
 
 export function ResultsScreen({
@@ -25,13 +29,12 @@ export function ResultsScreen({
   matchCount,
   totalQuestions,
   onPlayAgain,
-  selectedCategories
+  selectedCategories,
+  player1Answers = []
 }: ResultsScreenProps) {
   const score = Math.round((matchCount / totalQuestions) * 100);
-  const compatibility = getCompatibilityLevel(score);
+  const compatibility = getCompatibilityLevel(score)
   const [showImageModal, setShowImageModal] = useState(false);
-
-  const shouldCelebrate = score >= 80;
   
   const { 
     isGenerating, 
@@ -118,7 +121,7 @@ export function ResultsScreen({
           transition={{ duration: 0.5 }}
         >
           {/* Celebration overlay (reduced-motion safe) */}
-          <CelebrationConfetti active={shouldCelebrate} />
+          <CelebrationEffects score={score} />
 
           {/* Decorative elements */}
           <div className="absolute -top-4 -left-4 w-24 h-24 bg-primary/10 rounded-full blur-2xl" />
@@ -271,6 +274,9 @@ export function ResultsScreen({
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.2 }}
           >
+            {/* Surprise Gift */}
+            <SurpriseGift player1Name={player1Name} player2Name={player2Name} score={score} />
+
             {/* Generate Image Card Button */}
             <motion.button
               className="gold-button w-full"
@@ -283,6 +289,16 @@ export function ResultsScreen({
                 Create Shareable Card
               </span>
             </motion.button>
+
+            {/* Valentine Letter */}
+            <ValentineLetter player1Name={player1Name} player2Name={player2Name} score={score} />
+
+            {/* Play with Friend */}
+            <PlayWithFriend
+              player1Name={player1Name}
+              selectedCategories={selectedCategories}
+              player1Answers={player1Answers}
+            />
 
             {/* Donation */}
             <DonationDialog href={donationLink} player1Name={player1Name} player2Name={player2Name} />
