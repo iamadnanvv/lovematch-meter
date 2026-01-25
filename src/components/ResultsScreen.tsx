@@ -8,6 +8,7 @@ import { useGenerateResultCard } from '@/hooks/useGenerateResultCard';
 import logoImage from '@/assets/love-triangle-logo.png';
 import { CelebrationConfetti } from '@/components/results/CelebrationConfetti';
 import { DonationDialog } from '@/components/results/DonationDialog';
+import { ShareCaptionGenerator } from '@/components/results/ShareCaptionGenerator';
 
 interface ResultsScreenProps {
   player1Name: string;
@@ -249,6 +250,20 @@ export function ResultsScreen({
             </div>
           </motion.div>
 
+          {/* Share Caption Generator */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.0 }}
+          >
+            <ShareCaptionGenerator
+              player1Name={player1Name}
+              player2Name={player2Name}
+              score={score}
+              categoryNames={categoryNames}
+            />
+          </motion.div>
+
           {/* Actions */}
           <motion.div
             className="space-y-3"
@@ -269,8 +284,8 @@ export function ResultsScreen({
               </span>
             </motion.button>
 
-              {/* Donation */}
-              <DonationDialog href={donationLink} player1Name={player1Name} player2Name={player2Name} />
+            {/* Donation */}
+            <DonationDialog href={donationLink} player1Name={player1Name} player2Name={player2Name} />
 
             <div className="flex gap-3">
               <motion.button
