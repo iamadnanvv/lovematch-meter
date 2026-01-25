@@ -196,6 +196,7 @@ export function LoveTriangleGame() {
             totalQuestions={questions.length}
             onPlayAgain={handlePlayAgain}
             selectedCategories={selectedCategories}
+            player1Answers={answers.player1.filter((a): a is number => a !== null)}
           />
         )}
       </AnimatePresence>
