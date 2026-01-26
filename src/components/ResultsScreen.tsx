@@ -1,10 +1,11 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, Share2, RotateCcw, Sparkles, Download, Image, X, Loader2 } from 'lucide-react';
 import { getCompatibilityLevel, questionCategories } from '@/data/questions';
 import { LoveMeter } from './LoveMeter';
 import { HeartbeatAnimation } from './HeartbeatAnimation';
 import { useGenerateResultCard } from '@/hooks/useGenerateResultCard';
+import { useCelebrationSounds } from '@/hooks/useCelebrationSounds';
 import logoImage from '@/assets/love-triangle-logo.png';
 import { CelebrationEffects } from '@/components/results/CelebrationEffects';
 import { DonationDialog } from '@/components/results/DonationDialog';
@@ -12,6 +13,8 @@ import { ShareCaptionGenerator } from '@/components/results/ShareCaptionGenerato
 import { ValentineLetter } from '@/components/results/ValentineLetter';
 import { SurpriseGift } from '@/components/results/SurpriseGift';
 import { PlayWithFriend } from '@/components/results/PlayWithFriend';
+import { SoundToggle } from '@/components/results/SoundToggle';
+import { RelationshipBadge } from '@/components/results/RelationshipBadge';
 
 interface ResultsScreenProps {
   player1Name: string;
@@ -36,6 +39,8 @@ export function ResultsScreen({
   const compatibility = getCompatibilityLevel(score)
   const [showImageModal, setShowImageModal] = useState(false);
   
+  const celebrationSounds = useCelebrationSounds();
+  
   const { 
     isGenerating, 
     generatedImageUrl, 
@@ -45,6 +50,15 @@ export function ResultsScreen({
     shareImage,
     reset 
   } = useGenerateResultCard();
+
+  // Cleanup sounds on unmount
+  useEffect(() => {
+    return () => celebrationSounds.cleanup();
+  }, [celebrationSounds]);
+
+  const handleCelebrationTrigger = useCallback(() => {
+    celebrationSounds.playCelebration(score);
+  }, [celebrationSounds, score]);
 
   const categoryNames = selectedCategories
     .map(id => questionCategories.find(c => c.id === id)?.name)
@@ -120,8 +134,13 @@ export function ResultsScreen({
           animate={{ scale: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
+          {/* Sound Toggle */}
+          <div className="absolute top-4 right-4 z-10">
+            <SoundToggle isMuted={celebrationSounds.isMuted} onToggle={celebrationSounds.toggleMute} />
+          </div>
+
           {/* Celebration overlay (reduced-motion safe) */}
-          <CelebrationEffects score={score} />
+          <CelebrationEffects score={score} onTrigger={handleCelebrationTrigger} />
 
           {/* Decorative elements */}
           <div className="absolute -top-4 -left-4 w-24 h-24 bg-primary/10 rounded-full blur-2xl" />
@@ -276,6 +295,9 @@ export function ResultsScreen({
           >
             {/* Surprise Gift */}
             <SurpriseGift player1Name={player1Name} player2Name={player2Name} score={score} />
+
+            {/* Relationship Badge */}
+            <RelationshipBadge player1Name={player1Name} player2Name={player2Name} score={score} />
 
             {/* Generate Image Card Button */}
             <motion.button
