@@ -6,6 +6,7 @@ type EffectTier = "hearts" | "confetti" | "gold";
 
 interface CelebrationEffectsProps {
   score: number;
+  onTrigger?: (tier: EffectTier) => void;
 }
 
 function rand(min: number, max: number) {
@@ -19,15 +20,22 @@ function getTier(score: number): EffectTier | null {
   return null;
 }
 
-export function CelebrationEffects({ score }: CelebrationEffectsProps) {
+export function CelebrationEffects({ score, onTrigger }: CelebrationEffectsProps) {
   const reduceMotion = useReducedMotion();
   const [runKey, setRunKey] = useState(0);
+  const [hasFired, setHasFired] = useState(false);
   const tier = getTier(score);
 
   useEffect(() => {
     if (!tier || reduceMotion) return;
     setRunKey((k) => k + 1);
-  }, [tier, reduceMotion]);
+    
+    // Fire sound callback once on mount
+    if (!hasFired && onTrigger) {
+      onTrigger(tier);
+      setHasFired(true);
+    }
+  }, [tier, reduceMotion, onTrigger, hasFired]);
 
   if (!tier || reduceMotion) {
     // Reduced motion fallback: simple text
