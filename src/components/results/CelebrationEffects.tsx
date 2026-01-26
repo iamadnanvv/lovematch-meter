@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { Heart } from "lucide-react";
+import { useHapticFeedback } from "@/hooks/useHapticFeedback";
 
 type EffectTier = "hearts" | "confetti" | "gold";
 
@@ -25,17 +26,19 @@ export function CelebrationEffects({ score, onTrigger }: CelebrationEffectsProps
   const [runKey, setRunKey] = useState(0);
   const [hasFired, setHasFired] = useState(false);
   const tier = getTier(score);
+  const haptics = useHapticFeedback();
 
   useEffect(() => {
     if (!tier || reduceMotion) return;
     setRunKey((k) => k + 1);
     
-    // Fire sound callback once on mount
-    if (!hasFired && onTrigger) {
-      onTrigger(tier);
+    // Fire sound callback and haptic feedback once on mount
+    if (!hasFired) {
+      onTrigger?.(tier);
+      haptics.vibrateOnCelebration();
       setHasFired(true);
     }
-  }, [tier, reduceMotion, onTrigger, hasFired]);
+  }, [tier, reduceMotion, onTrigger, hasFired, haptics]);
 
   if (!tier || reduceMotion) {
     // Reduced motion fallback: simple text

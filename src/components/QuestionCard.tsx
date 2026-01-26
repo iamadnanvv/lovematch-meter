@@ -3,6 +3,7 @@ import { Heart, MessageCircle } from 'lucide-react';
 import { Question } from '@/data/questions';
 import { LoveMeter } from './LoveMeter';
 import { HeartbeatAnimation } from './HeartbeatAnimation';
+import { useHapticFeedback } from '@/hooks/useHapticFeedback';
 
 interface QuestionCardProps {
   question: Question;
@@ -31,6 +32,7 @@ export function QuestionCard({
   onPlayer2Answer,
   onNext
 }: QuestionCardProps) {
+  const haptics = useHapticFeedback();
   const bothAnswered = player1Answer !== null && player2Answer !== null;
   const isMatch = bothAnswered && player1Answer === player2Answer;
 
@@ -39,6 +41,25 @@ export function QuestionCard({
     if (matchRate >= 0.6) return 'high';
     if (matchRate >= 0.3) return 'medium';
     return 'low';
+  };
+
+  const handlePlayer1Select = (index: number) => {
+    haptics.vibrateOnSelect();
+    onPlayer1Answer(index);
+  };
+
+  const handlePlayer2Select = (index: number) => {
+    haptics.vibrateOnSelect();
+    onPlayer2Answer(index);
+  };
+
+  const handleNext = () => {
+    if (isMatch) {
+      haptics.vibrateOnSuccess();
+    } else {
+      haptics.vibrateOnTap();
+    }
+    onNext();
   };
 
   return (
@@ -109,7 +130,7 @@ export function QuestionCard({
                         ? 'bg-primary text-primary-foreground'
                         : 'bg-rose-light hover:bg-primary/20 text-foreground'
                     } ${player2Answer !== null && bothAnswered ? 'pointer-events-none' : ''}`}
-                    onClick={() => onPlayer1Answer(index)}
+                    onClick={() => handlePlayer1Select(index)}
                     whileHover={{ scale: player2Answer !== null && bothAnswered ? 1 : 1.02 }}
                     whileTap={{ scale: player2Answer !== null && bothAnswered ? 1 : 0.98 }}
                   >
@@ -147,7 +168,7 @@ export function QuestionCard({
                         ? 'bg-accent text-accent-foreground'
                         : 'bg-gold-light hover:bg-accent/20 text-foreground'
                     } ${player1Answer !== null && bothAnswered ? 'pointer-events-none' : ''}`}
-                    onClick={() => onPlayer2Answer(index)}
+                    onClick={() => handlePlayer2Select(index)}
                     whileHover={{ scale: player1Answer !== null && bothAnswered ? 1 : 1.02 }}
                     whileTap={{ scale: player1Answer !== null && bothAnswered ? 1 : 0.98 }}
                   >
@@ -190,7 +211,7 @@ export function QuestionCard({
                 
                 <motion.button
                   className="gold-button"
-                  onClick={onNext}
+                  onClick={handleNext}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
