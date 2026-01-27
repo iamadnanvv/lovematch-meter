@@ -1,10 +1,9 @@
-import { motion, AnimatePresence, PanInfo } from 'framer-motion';
-import { Heart, MessageCircle, ChevronLeft, ChevronRight } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Heart, MessageCircle } from 'lucide-react';
 import { Question } from '@/data/questions';
 import { LoveMeter } from './LoveMeter';
 import { HeartbeatAnimation } from './HeartbeatAnimation';
 import { useHapticFeedback } from '@/hooks/useHapticFeedback';
-import { useState, useCallback } from 'react';
 
 interface QuestionCardProps {
   question: Question;
@@ -18,11 +17,7 @@ interface QuestionCardProps {
   onPlayer1Answer: (index: number) => void;
   onPlayer2Answer: (index: number) => void;
   onNext: () => void;
-  onPrevious?: () => void;
 }
-
-const SWIPE_THRESHOLD = 100;
-const SWIPE_VELOCITY = 500;
 
 export function QuestionCard({
   question,
@@ -35,13 +30,9 @@ export function QuestionCard({
   player2Answer,
   onPlayer1Answer,
   onPlayer2Answer,
-  onNext,
-  onPrevious
+  onNext
 }: QuestionCardProps) {
   const haptics = useHapticFeedback();
-  const [direction, setDirection] = useState(0);
-  const [dragX, setDragX] = useState(0);
-  
   const bothAnswered = player1Answer !== null && player2Answer !== null;
   const isMatch = bothAnswered && player1Answer === player2Answer;
 
@@ -62,58 +53,13 @@ export function QuestionCard({
     onPlayer2Answer(index);
   };
 
-  const handleNext = useCallback(() => {
+  const handleNext = () => {
     if (isMatch) {
       haptics.vibrateOnSuccess();
     } else {
       haptics.vibrateOnTap();
     }
-    setDirection(1);
     onNext();
-  }, [isMatch, haptics, onNext]);
-
-  const handlePrevious = useCallback(() => {
-    if (onPrevious && currentQuestion > 1) {
-      haptics.vibrateOnTap();
-      setDirection(-1);
-      onPrevious();
-    }
-  }, [onPrevious, currentQuestion, haptics]);
-
-  const handleDragEnd = useCallback(
-    (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
-      const { offset, velocity } = info;
-      
-      // Swipe left (next) - only if both answered
-      if (bothAnswered && (offset.x < -SWIPE_THRESHOLD || velocity.x < -SWIPE_VELOCITY)) {
-        handleNext();
-      }
-      // Swipe right (previous)
-      else if (onPrevious && currentQuestion > 1 && (offset.x > SWIPE_THRESHOLD || velocity.x > SWIPE_VELOCITY)) {
-        handlePrevious();
-      }
-      
-      setDragX(0);
-    },
-    [bothAnswered, handleNext, handlePrevious, currentQuestion, onPrevious]
-  );
-
-  const slideVariants = {
-    enter: (direction: number) => ({
-      x: direction > 0 ? 300 : -300,
-      opacity: 0,
-      scale: 0.9,
-    }),
-    center: {
-      x: 0,
-      opacity: 1,
-      scale: 1,
-    },
-    exit: (direction: number) => ({
-      x: direction < 0 ? 300 : -300,
-      opacity: 0,
-      scale: 0.9,
-    }),
   };
 
   return (
@@ -136,74 +82,18 @@ export function QuestionCard({
           <HeartbeatAnimation intensity={getIntensity()} size="sm" />
         </div>
         <LoveMeter score={matchCount} maxScore={totalQuestions} showPercentage={false} />
-        
-        {/* Swipe hint on mobile */}
-        <div className="flex items-center justify-center gap-4 mt-3 text-xs text-muted-foreground md:hidden">
-          {currentQuestion > 1 && onPrevious && (
-            <span className="flex items-center gap-1">
-              <ChevronLeft className="w-3 h-3" />
-              Swipe right for previous
-            </span>
-          )}
-          {bothAnswered && (
-            <span className="flex items-center gap-1">
-              Swipe left for next
-              <ChevronRight className="w-3 h-3" />
-            </span>
-          )}
-        </div>
       </motion.div>
 
-      {/* Question Card with Swipe */}
-      <AnimatePresence mode="wait" custom={direction}>
+      {/* Question Card */}
+      <AnimatePresence mode="wait">
         <motion.div 
           key={question.id}
-          custom={direction}
-          variants={slideVariants}
-          initial="enter"
-          animate="center"
-          exit="exit"
-          transition={{ 
-            type: "spring", 
-            stiffness: 300, 
-            damping: 30,
-            duration: 0.3 
-          }}
-          drag="x"
-          dragConstraints={{ left: 0, right: 0 }}
-          dragElastic={0.2}
-          onDrag={(e, info) => setDragX(info.offset.x)}
-          onDragEnd={handleDragEnd}
-          className="love-card p-6 md:p-8 w-full max-w-2xl cursor-grab active:cursor-grabbing touch-pan-y"
-          style={{
-            rotate: dragX * 0.02,
-            x: dragX * 0.3,
-          }}
+          className="love-card p-6 md:p-8 w-full max-w-2xl"
+          initial={{ opacity: 0, x: 50, scale: 0.95 }}
+          animate={{ opacity: 1, x: 0, scale: 1 }}
+          exit={{ opacity: 0, x: -50, scale: 0.95 }}
+          transition={{ duration: 0.3 }}
         >
-          {/* Swipe indicators */}
-          <AnimatePresence>
-            {dragX < -30 && bothAnswered && (
-              <motion.div
-                className="absolute right-4 top-1/2 -translate-y-1/2 bg-primary text-primary-foreground px-3 py-1 rounded-full text-sm font-medium"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20 }}
-              >
-                Next →
-              </motion.div>
-            )}
-            {dragX > 30 && onPrevious && currentQuestion > 1 && (
-              <motion.div
-                className="absolute left-4 top-1/2 -translate-y-1/2 bg-muted text-muted-foreground px-3 py-1 rounded-full text-sm font-medium"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-              >
-                ← Back
-              </motion.div>
-            )}
-          </AnimatePresence>
-
           {/* Question */}
           <div className="text-center mb-6">
             <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-rose-light text-primary text-sm font-medium mb-4">
@@ -319,26 +209,14 @@ export function QuestionCard({
                   </div>
                 )}
                 
-                <div className="flex items-center justify-center gap-3">
-                  {onPrevious && currentQuestion > 1 && (
-                    <motion.button
-                      className="love-button-outline px-4"
-                      onClick={handlePrevious}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      <ChevronLeft className="w-5 h-5" />
-                    </motion.button>
-                  )}
-                  <motion.button
-                    className="gold-button"
-                    onClick={handleNext}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    {currentQuestion === totalQuestions ? 'See Results' : 'Next Question'}
-                  </motion.button>
-                </div>
+                <motion.button
+                  className="gold-button"
+                  onClick={handleNext}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  {currentQuestion === totalQuestions ? 'See Results' : 'Next Question'}
+                </motion.button>
               </motion.div>
             )}
           </AnimatePresence>
