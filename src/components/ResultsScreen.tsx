@@ -1,6 +1,6 @@
 import { useMemo, useState, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, Share2, RotateCcw, Sparkles, Download, Image, X, Loader2 } from 'lucide-react';
+import { Heart, Share2, RotateCcw, Sparkles, Download, Image, X, Loader2, Camera } from 'lucide-react';
 import { getCompatibilityLevel, questionCategories } from '@/data/questions';
 import { LoveMeter } from './LoveMeter';
 import { HeartbeatAnimation } from './HeartbeatAnimation';
@@ -15,6 +15,8 @@ import { SurpriseGift } from '@/components/results/SurpriseGift';
 import { PlayWithFriend } from '@/components/results/PlayWithFriend';
 import { SoundToggle } from '@/components/results/SoundToggle';
 import { RelationshipBadge } from '@/components/results/RelationshipBadge';
+import { PhotoResultCard } from '@/components/results/PhotoResultCard';
+import { EnhancedDonationPopup } from '@/components/EnhancedDonationPopup';
 
 interface ResultsScreenProps {
   player1Name: string;
@@ -38,7 +40,9 @@ export function ResultsScreen({
   const score = Math.round((matchCount / totalQuestions) * 100);
   const compatibility = getCompatibilityLevel(score)
   const [showImageModal, setShowImageModal] = useState(false);
-  
+  const [showPhotoCard, setShowPhotoCard] = useState(false);
+  const [showDonationPopup, setShowDonationPopup] = useState(false);
+  const [donationVariant, setDonationVariant] = useState<'reveal' | 'download' | 'share'>('reveal');
   const celebrationSounds = useCelebrationSounds();
   
   const { 
@@ -296,6 +300,19 @@ export function ResultsScreen({
             {/* Surprise Gift */}
             <SurpriseGift player1Name={player1Name} player2Name={player2Name} score={score} />
 
+            {/* Photo Result Card */}
+            <motion.button
+              className="w-full p-4 rounded-xl bg-gradient-to-r from-violet-500 to-purple-600 text-white font-semibold"
+              onClick={() => setShowPhotoCard(true)}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <span className="flex items-center justify-center gap-2">
+                <Camera className="w-5 h-5" />
+                Create Photo Result Card
+              </span>
+            </motion.button>
+
             {/* Relationship Badge */}
             <RelationshipBadge player1Name={player1Name} player2Name={player2Name} score={score} />
 
@@ -308,7 +325,7 @@ export function ResultsScreen({
             >
               <span className="flex items-center justify-center gap-2">
                 <Image className="w-5 h-5" />
-                Create Shareable Card
+                Create AI Shareable Card
               </span>
             </motion.button>
 
@@ -460,6 +477,56 @@ export function ResultsScreen({
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Photo Card Modal */}
+      <AnimatePresence>
+        {showPhotoCard && (
+          <motion.div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowPhotoCard(false)}
+          >
+            <motion.div
+              className="love-card p-6 max-w-md w-full max-h-[90vh] overflow-auto"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-display text-xl font-bold text-foreground">
+                  Photo Result Card
+                </h3>
+                <button
+                  onClick={() => setShowPhotoCard(false)}
+                  className="p-2 rounded-full hover:bg-muted transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              <PhotoResultCard
+                player1Name={player1Name}
+                player2Name={player2Name}
+                score={score}
+                verdict={compatibility.title}
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Enhanced Donation Popup */}
+      <EnhancedDonationPopup
+        player1Name={player1Name}
+        player2Name={player2Name}
+        score={score}
+        isOpen={showDonationPopup}
+        onClose={() => setShowDonationPopup(false)}
+        onDonate={() => setShowDonationPopup(false)}
+        variant={donationVariant}
+      />
     </>
   );
 }
