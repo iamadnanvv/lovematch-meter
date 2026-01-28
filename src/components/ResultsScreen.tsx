@@ -15,6 +15,9 @@ import { SurpriseGift } from '@/components/results/SurpriseGift';
 import { PlayWithFriend } from '@/components/results/PlayWithFriend';
 import { SoundToggle } from '@/components/results/SoundToggle';
 import { RelationshipBadge } from '@/components/results/RelationshipBadge';
+import { PhotoScoreCard } from '@/components/results/PhotoScoreCard';
+import { TruthOrDare } from '@/components/results/TruthOrDare';
+import { EmotionalDonationNudge } from '@/components/ValentineScarcity';
 
 interface ResultsScreenProps {
   player1Name: string;
@@ -293,6 +296,12 @@ export function ResultsScreen({
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.2 }}
           >
+            {/* Photo Score Card - NEW */}
+            <PhotoScoreCard player1Name={player1Name} player2Name={player2Name} score={score} />
+
+            {/* Truth or Dare - NEW */}
+            <TruthOrDare player1Name={player1Name} player2Name={player2Name} score={score} />
+
             {/* Surprise Gift */}
             <SurpriseGift player1Name={player1Name} player2Name={player2Name} score={score} />
 
@@ -320,6 +329,14 @@ export function ResultsScreen({
               player1Name={player1Name}
               selectedCategories={selectedCategories}
               player1Answers={player1Answers}
+            />
+
+            {/* Emotional Donation Nudge - NEW */}
+            <EmotionalDonationNudge 
+              player1Name={player1Name} 
+              player2Name={player2Name} 
+              score={score}
+              onDonate={() => window.open(donationLink, '_blank', 'noopener,noreferrer')}
             />
 
             {/* Donation */}
