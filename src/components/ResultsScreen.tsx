@@ -17,7 +17,6 @@ import { SoundToggle } from '@/components/results/SoundToggle';
 import { RelationshipBadge } from '@/components/results/RelationshipBadge';
 import { PhotoScoreCard } from '@/components/results/PhotoScoreCard';
 import { TruthOrDare } from '@/components/results/TruthOrDare';
-import { EmotionalDonationNudge } from '@/components/ValentineScarcity';
 
 interface ResultsScreenProps {
   player1Name: string;
@@ -329,14 +328,6 @@ export function ResultsScreen({
               player1Name={player1Name}
               selectedCategories={selectedCategories}
               player1Answers={player1Answers}
-            />
-
-            {/* Emotional Donation Nudge - NEW */}
-            <EmotionalDonationNudge 
-              player1Name={player1Name} 
-              player2Name={player2Name} 
-              score={score}
-              onDonate={() => window.open(donationLink, '_blank', 'noopener,noreferrer')}
             />
 
             {/* Donation */}
