@@ -3,7 +3,6 @@ import { AnimatePresence } from "framer-motion";
 import { LoveTriangleGame } from "@/components/LoveTriangleGame";
 import { SplashScreen } from "@/components/SplashScreen";
 import { JoinGameFlow } from "@/components/JoinGameFlow";
-import { ValentineScarcity } from "@/components/ValentineScarcity";
 
 const SPLASH_MS = 1600;
 
@@ -29,19 +28,13 @@ const Index = () => {
 
   // If we have a join code, show the join game flow after splash
   if (joinCode && !showSplash) {
-    return (
-      <ValentineScarcity>
-        <JoinGameFlow shareCode={joinCode} onExit={handleExitJoin} />
-      </ValentineScarcity>
-    );
+    return <JoinGameFlow shareCode={joinCode} onExit={handleExitJoin} />;
   }
 
   return (
-    <ValentineScarcity>
-      <AnimatePresence mode="wait">
-        {showSplash ? <SplashScreen key="splash" /> : <LoveTriangleGame key="game" />}
-      </AnimatePresence>
-    </ValentineScarcity>
+    <AnimatePresence mode="wait">
+      {showSplash ? <SplashScreen key="splash" /> : <LoveTriangleGame key="game" />}
+    </AnimatePresence>
   );
 };
 
