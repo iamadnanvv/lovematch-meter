@@ -1,12 +1,13 @@
 import { useState, useEffect, useCallback } from "react";
 import { AnimatePresence } from "framer-motion";
 import { motion } from "framer-motion";
-import { AlertCircle, Loader2 } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import { useQuizSession } from "@/hooks/useQuizSession";
 import { questionCategories, Question } from "@/data/questions";
 import { JoinGameSetup } from "./JoinGameSetup";
 import { RemoteQuestionCard } from "./RemoteQuestionCard";
 import { RemoteResultsScreen } from "./RemoteResultsScreen";
+import { GameLoadingSkeleton } from "@/components/skeletons/GameSkeleton";
 import logoImage from "@/assets/love-triangle-logo.png";
 
 type JoinState = "loading" | "error" | "setup" | "playing" | "submitting" | "results";
@@ -116,25 +117,7 @@ export function JoinGameFlow({ shareCode, onExit }: JoinGameFlowProps) {
 
   // Loading state
   if (state === "loading" || state === "submitting") {
-    return (
-      <motion.div
-        className="min-h-screen flex flex-col items-center justify-center px-4"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-      >
-        <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          className="mb-6"
-        >
-          <img src={logoImage} alt="Love Triangle" className="w-24 h-24" />
-        </motion.div>
-        <Loader2 className="w-8 h-8 text-primary animate-spin mb-4" />
-        <p className="text-muted-foreground">
-          {state === "loading" ? "Loading quiz..." : "Submitting your answers..."}
-        </p>
-      </motion.div>
-    );
+    return <GameLoadingSkeleton />;
   }
 
   // Error state
