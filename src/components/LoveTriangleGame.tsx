@@ -7,6 +7,7 @@ import { QuestionCard } from './QuestionCard';
 import { ResultsScreen } from './ResultsScreen';
 import { FloatingHearts } from './FloatingHearts';
 import { MusicControl } from './MusicControl';
+import { ValentineBanner } from './ValentineBanner';
 import { questionCategories, Question } from '@/data/questions';
 import { useBackgroundMusic } from '@/hooks/useBackgroundMusic';
 
