@@ -1,4 +1,4 @@
-import { Heart, Instagram, Users, HeartHandshake } from "lucide-react";
+import { Heart, Instagram, Users, HeartHandshake, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export function Footer() {
@@ -24,6 +24,13 @@ export function Footer() {
 
           {/* Right side - Links */}
           <div className="flex items-center gap-4 text-xs sm:text-sm">
+            <Link
+              to="/valentine"
+              className="flex items-center gap-1 text-primary hover:text-primary/80 transition-colors font-medium"
+            >
+              <Sparkles className="w-4 h-4" />
+              <span className="hidden sm:inline">Valentine</span>
+            </Link>
             <Link
               to="/creators"
               className="flex items-center gap-1 text-muted-foreground hover:text-primary transition-colors"

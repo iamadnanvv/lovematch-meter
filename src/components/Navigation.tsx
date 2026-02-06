@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Heart, Users, HeartHandshake } from "lucide-react";
+import { Menu, X, Heart, Users, HeartHandshake, Sparkles } from "lucide-react";
 import logoImage from "@/assets/love-triangle-logo.png";
 import { DonationTrigger } from "./DonationPopup";
 
@@ -11,6 +11,7 @@ export function Navigation() {
 
   const navLinks = [
     { href: "/", label: "Play", icon: Heart },
+    { href: "/valentine", label: "Valentine", icon: Sparkles },
     { href: "/creators", label: "Creator Portal", icon: Users },
   ];
 
