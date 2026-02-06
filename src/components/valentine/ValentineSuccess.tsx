@@ -143,7 +143,10 @@ export function ValentineSuccess({ onPlayAgain }: ValentineSuccessProps) {
           >
             {copied ? (
               <>
-                <Check className="w-4 h-4 mr-2 text-green-500" />
+                <Check className="w-4 h-4 mr-2 text-primary" />
+                Copied!
+              </>
+            ) : (
                 Copied!
               </>
             ) : (
