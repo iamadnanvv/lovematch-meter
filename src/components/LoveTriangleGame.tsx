@@ -7,7 +7,6 @@ import { QuestionCard } from './QuestionCard';
 import { ResultsScreen } from './ResultsScreen';
 import { FloatingHearts } from './FloatingHearts';
 import { MusicControl } from './MusicControl';
-import { ValentineBanner } from './ValentineBanner';
 import { questionCategories, Question } from '@/data/questions';
 import { useBackgroundMusic } from '@/hooks/useBackgroundMusic';
 
@@ -133,9 +132,6 @@ export function LoveTriangleGame() {
 
   return (
     <div className="relative">
-      {/* Valentine Banner - shows during February */}
-      {gameState === 'welcome' && <ValentineBanner />}
-      
       <FloatingHearts />
       
       {/* Music Control - show after welcome */}
