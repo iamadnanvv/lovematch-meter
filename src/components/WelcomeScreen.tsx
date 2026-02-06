@@ -105,6 +105,22 @@ export function WelcomeScreen({ onStart }: WelcomeScreenProps) {
         >
           Answer together & discover your compatibility!
         </motion.p>
+
+        {/* Valentine proposal link */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.2 }}
+          className="mt-6 pt-6 border-t border-primary/10"
+        >
+          <Link 
+            to="/valentine"
+            className="inline-flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors group"
+          >
+            <Heart className="w-4 h-4 fill-primary/30 group-hover:fill-primary/50 transition-colors" />
+            <span>Ask someone to be your Valentine 💕</span>
+          </Link>
+        </motion.div>
       </motion.div>
     </motion.div>
   );
