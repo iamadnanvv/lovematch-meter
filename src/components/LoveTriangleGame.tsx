@@ -133,6 +133,9 @@ export function LoveTriangleGame() {
 
   return (
     <div className="relative">
+      {/* Valentine Banner - shows during February */}
+      {gameState === 'welcome' && <ValentineBanner />}
+      
       <FloatingHearts />
       
       {/* Music Control - show after welcome */}
