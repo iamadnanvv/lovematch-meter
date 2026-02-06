@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { Heart, Sparkles, Users } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import logoImage from '@/assets/love-triangle-logo.png';
 
 interface WelcomeScreenProps {
