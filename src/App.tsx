@@ -23,6 +23,7 @@ function AppContent() {
       <div className={showNavigation ? "pt-16 pb-14" : "pb-14"}>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/valentine" element={<ValentineProposal />} />
           <Route path="/creators" element={<CreatorPortal />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
