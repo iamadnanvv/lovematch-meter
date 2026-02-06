@@ -1,4 +1,4 @@
-import { Heart, Instagram, Users, HeartHandshake } from "lucide-react";
+import { Heart, Instagram, Users, HeartHandshake, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export function Footer() {
