@@ -147,9 +147,6 @@ export function ValentineSuccess({ onPlayAgain }: ValentineSuccessProps) {
                 Copied!
               </>
             ) : (
-                Copied!
-              </>
-            ) : (
               <>
                 <Copy className="w-4 h-4 mr-2" />
                 Copy Link
