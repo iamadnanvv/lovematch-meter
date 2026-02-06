@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import CreatorPortal from "./pages/CreatorPortal";
+import ValentineProposal from "./pages/ValentineProposal";
 import { Footer } from "@/components/Footer";
 import { Navigation } from "@/components/Navigation";
 import { DonationPopup } from "@/components/DonationPopup";
