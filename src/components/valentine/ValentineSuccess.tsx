@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Heart, Sparkles, Share2, Copy, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -9,11 +9,19 @@ interface ValentineSuccessProps {
   onPlayAgain?: () => void;
   senderName?: string;
   recipientName?: string;
+  shareableUrl?: string;
+  couplePhoto?: string | null;
 }
 
-export function ValentineSuccess({ onPlayAgain, senderName, recipientName }: ValentineSuccessProps) {
+export function ValentineSuccess({ 
+  onPlayAgain, 
+  senderName, 
+  recipientName, 
+  shareableUrl,
+  couplePhoto 
+}: ValentineSuccessProps) {
   const [copied, setCopied] = useState(false);
-  const shareUrl = window.location.origin + '/valentine';
+  const finalShareUrl = shareableUrl || window.location.origin + '/valentine';
   
   const getSuccessMessage = () => {
     if (recipientName && senderName) {
@@ -28,7 +36,7 @@ export function ValentineSuccess({ onPlayAgain, senderName, recipientName }: Val
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(shareUrl);
+      await navigator.clipboard.writeText(finalShareUrl);
       setCopied(true);
       toast.success("Link copied! Share with someone special 💕");
       setTimeout(() => setCopied(false), 2000);
@@ -41,9 +49,13 @@ export function ValentineSuccess({ onPlayAgain, senderName, recipientName }: Val
     if (navigator.share) {
       try {
         await navigator.share({
-          title: "Will you be my Valentine? 💖",
-          text: "Someone special wants to ask you something...",
-          url: shareUrl,
+          title: senderName 
+            ? `${senderName} wants to ask you something 💖` 
+            : "Will you be my Valentine? 💖",
+          text: recipientName 
+            ? `${recipientName}, someone special has a question for you...`
+            : "Someone special wants to ask you something...",
+          url: finalShareUrl,
         });
       } catch {
         handleCopy();
@@ -55,7 +67,7 @@ export function ValentineSuccess({ onPlayAgain, senderName, recipientName }: Val
 
   return (
     <motion.div
-      className="min-h-screen flex flex-col items-center justify-center px-4 py-8 relative overflow-hidden"
+      className="min-h-screen flex flex-col items-center justify-center px-4 py-8 relative overflow-hidden z-10"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
@@ -70,8 +82,8 @@ export function ValentineSuccess({ onPlayAgain, senderName, recipientName }: Val
             key={i}
             className="absolute text-primary/20"
             initial={{ 
-              x: Math.random() * window.innerWidth, 
-              y: window.innerHeight + 50,
+              x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 400), 
+              y: (typeof window !== 'undefined' ? window.innerHeight : 800) + 50,
               rotate: Math.random() * 360
             }}
             animate={{ 
@@ -96,15 +108,43 @@ export function ValentineSuccess({ onPlayAgain, senderName, recipientName }: Val
         animate={{ scale: 1, y: 0 }}
         transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
       >
-        {/* Success emoji */}
-        <motion.div
-          className="text-7xl mb-6"
-          initial={{ scale: 0, rotate: -180 }}
-          animate={{ scale: 1, rotate: 0 }}
-          transition={{ delay: 0.4, type: "spring", stiffness: 200 }}
-        >
-          🥰
-        </motion.div>
+        {/* Couple photo if available */}
+        {couplePhoto && (
+          <motion.div
+            className="mb-6"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.3 }}
+          >
+            <div className="relative w-24 h-24 mx-auto rounded-full overflow-hidden border-4 border-primary/40 shadow-xl">
+              <img
+                src={couplePhoto}
+                alt="Couple"
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent" />
+            </div>
+            <motion.div
+              className="flex justify-center gap-1 mt-2"
+              animate={{ scale: [1, 1.2, 1] }}
+              transition={{ duration: 1, repeat: Infinity }}
+            >
+              <Heart className="w-4 h-4 text-primary fill-primary" />
+            </motion.div>
+          </motion.div>
+        )}
+
+        {/* Success emoji (only if no photo) */}
+        {!couplePhoto && (
+          <motion.div
+            className="text-7xl mb-6"
+            initial={{ scale: 0, rotate: -180 }}
+            animate={{ scale: 1, rotate: 0 }}
+            transition={{ delay: 0.4, type: "spring", stiffness: 200 }}
+          >
+            🥰
+          </motion.div>
+        )}
 
         {/* Success message */}
         <motion.h1
@@ -174,7 +214,7 @@ export function ValentineSuccess({ onPlayAgain, senderName, recipientName }: Val
               className="w-full text-muted-foreground hover:text-primary"
             >
               <Sparkles className="w-4 h-4 mr-2" />
-              Ask Again
+              Create Another
             </Button>
           )}
         </motion.div>
