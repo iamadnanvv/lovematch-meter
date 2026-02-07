@@ -11,6 +11,7 @@ export function Navigation() {
 
   const navLinks = [
     { href: "/", label: "Play", icon: Heart },
+    { href: "/valentine", label: "Valentine", icon: Heart },
     { href: "/creators", label: "Creator Portal", icon: Users },
   ];
 

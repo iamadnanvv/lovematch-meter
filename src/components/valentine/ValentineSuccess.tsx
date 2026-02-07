@@ -7,11 +7,24 @@ import { toast } from 'sonner';
 
 interface ValentineSuccessProps {
   onPlayAgain?: () => void;
+  senderName?: string;
+  recipientName?: string;
 }
 
-export function ValentineSuccess({ onPlayAgain }: ValentineSuccessProps) {
+export function ValentineSuccess({ onPlayAgain, senderName, recipientName }: ValentineSuccessProps) {
   const [copied, setCopied] = useState(false);
   const shareUrl = window.location.origin + '/valentine';
+  
+  const getSuccessMessage = () => {
+    if (recipientName && senderName) {
+      return `${recipientName} said Yes to ${senderName}!`;
+    } else if (recipientName) {
+      return `${recipientName} said Yes!`;
+    } else if (senderName) {
+      return `You said Yes to ${senderName}!`;
+    }
+    return "Yay! You Said Yes!";
+  };
 
   const handleCopy = async () => {
     try {
@@ -100,7 +113,7 @@ export function ValentineSuccess({ onPlayAgain }: ValentineSuccessProps) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
         >
-          Yay! You Said Yes!
+          {getSuccessMessage()}
         </motion.h1>
 
         <motion.p
