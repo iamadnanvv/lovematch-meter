@@ -1,30 +1,40 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, Sparkles, Edit3 } from 'lucide-react';
+import { Heart, Sparkles, Edit3, Palette, Share2, ArrowRight, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { EscapingNoButton } from '@/components/valentine/EscapingNoButton';
 import { ValentineSuccess } from '@/components/valentine/ValentineSuccess';
 import { BackgroundThemes, ThemeSelector, ThemeType } from '@/components/valentine/BackgroundThemes';
 import { PhotoUpload } from '@/components/valentine/PhotoUpload';
+import { useValentineSounds } from '@/hooks/useValentineSounds';
+import { SoundToggle } from '@/components/results/SoundToggle';
 
-type ValentineState = 'customize' | 'asking' | 'success';
+type ValentineState = 'step1' | 'step2' | 'step3' | 'asking' | 'success';
+
+const STEP_TITLES = {
+  step1: 'Name & Details',
+  step2: 'Choose Theme',
+  step3: 'Share Link',
+};
 
 export default function ValentineProposal() {
   const [searchParams] = useSearchParams();
   
-  // Check if URL has pre-filled names
+  // Check if URL has pre-filled names (skip to asking state)
   const urlFrom = searchParams.get('from') || '';
   const urlTo = searchParams.get('to') || '';
   const hasUrlParams = !!(urlFrom || urlTo);
   
-  const [state, setState] = useState<ValentineState>(hasUrlParams ? 'asking' : 'customize');
+  const [state, setState] = useState<ValentineState>(hasUrlParams ? 'asking' : 'step1');
   const [yesScale, setYesScale] = useState(1);
   const [senderName, setSenderName] = useState(urlFrom);
   const [recipientName, setRecipientName] = useState(urlTo);
   const [selectedTheme, setSelectedTheme] = useState<ThemeType>('hearts');
   const [couplePhoto, setCouplePhoto] = useState<string | null>(null);
+
+  const { isMuted, toggleMute, playYesSound, playNoEscapeSound, cleanup } = useValentineSounds();
 
   // Update names from URL params on mount
   useEffect(() => {
@@ -32,11 +42,24 @@ export default function ValentineProposal() {
     if (urlTo) setRecipientName(urlTo);
   }, [urlFrom, urlTo]);
 
-  const handleStartProposal = () => {
-    setState('asking');
+  // Cleanup sounds on unmount
+  useEffect(() => {
+    return () => cleanup();
+  }, [cleanup]);
+
+  const handleNext = () => {
+    if (state === 'step1') setState('step2');
+    else if (state === 'step2') setState('step3');
+    else if (state === 'step3') setState('asking');
+  };
+
+  const handleBack = () => {
+    if (state === 'step2') setState('step1');
+    else if (state === 'step3') setState('step2');
   };
 
   const handleYes = () => {
+    playYesSound();
     setState('success');
   };
 
@@ -45,7 +68,7 @@ export default function ValentineProposal() {
   };
 
   const handlePlayAgain = () => {
-    setState('customize');
+    setState('step1');
     setYesScale(1);
   };
 
@@ -68,18 +91,62 @@ export default function ValentineProposal() {
     return `${window.location.origin}/valentine${queryString ? `?${queryString}` : ''}`;
   };
 
+  const getCurrentStep = () => {
+    if (state === 'step1') return 1;
+    if (state === 'step2') return 2;
+    if (state === 'step3') return 3;
+    return 0;
+  };
+
+  const renderStepIndicator = () => {
+    const currentStep = getCurrentStep();
+    if (currentStep === 0) return null;
+
+    return (
+      <div className="flex items-center justify-center gap-2 mb-6">
+        {[1, 2, 3].map((step) => (
+          <div key={step} className="flex items-center">
+            <motion.div
+              className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${
+                step === currentStep
+                  ? 'bg-primary text-primary-foreground'
+                  : step < currentStep
+                  ? 'bg-primary/30 text-primary'
+                  : 'bg-muted text-muted-foreground'
+              }`}
+              initial={{ scale: 0.8 }}
+              animate={{ scale: step === currentStep ? 1.1 : 1 }}
+              transition={{ type: "spring", stiffness: 300 }}
+            >
+              {step}
+            </motion.div>
+            {step < 3 && (
+              <div className={`w-8 h-0.5 mx-1 ${step < currentStep ? 'bg-primary/30' : 'bg-muted'}`} />
+            )}
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-love relative overflow-hidden">
       <BackgroundThemes theme={selectedTheme} />
       
+      {/* Sound toggle */}
+      <div className="fixed top-4 right-4 z-50">
+        <SoundToggle isMuted={isMuted} onToggle={toggleMute} />
+      </div>
+      
       <AnimatePresence mode="wait">
-        {state === 'customize' ? (
+        {/* Step 1: Name & Details */}
+        {state === 'step1' && (
           <motion.div
-            key="customize"
+            key="step1"
             className="min-h-screen flex flex-col items-center justify-center px-4 py-8 relative z-10"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.3 }}
           >
             <motion.div
@@ -88,7 +155,8 @@ export default function ValentineProposal() {
               animate={{ scale: 1, y: 0 }}
               transition={{ delay: 0.1, type: "spring", stiffness: 200 }}
             >
-              {/* Header */}
+              {renderStepIndicator()}
+
               <motion.div
                 className="flex justify-center gap-2 mb-4"
                 initial={{ opacity: 0, y: -10 }}
@@ -106,7 +174,7 @@ export default function ValentineProposal() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
               >
-                Personalize Your Proposal
+                Name & Details
               </motion.h1>
 
               <motion.p
@@ -115,7 +183,7 @@ export default function ValentineProposal() {
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.4 }}
               >
-                Make it extra special 💕
+                Add your names and a special photo 💕
               </motion.p>
 
               {/* Photo upload */}
@@ -163,19 +231,6 @@ export default function ValentineProposal() {
                 </div>
               </motion.div>
 
-              {/* Theme selector */}
-              <motion.div
-                className="mb-6"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.55 }}
-              >
-                <label className="text-xs font-medium text-foreground mb-3 block">
-                  Choose a theme
-                </label>
-                <ThemeSelector selectedTheme={selectedTheme} onSelectTheme={setSelectedTheme} />
-              </motion.div>
-
               {/* Preview */}
               <motion.div
                 className="p-3 bg-rose-light/50 rounded-xl border border-primary/10 mb-5"
@@ -189,23 +244,235 @@ export default function ValentineProposal() {
                 </p>
               </motion.div>
 
-              {/* Continue button */}
+              {/* Next button */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.7 }}
               >
                 <Button
-                  onClick={handleStartProposal}
+                  onClick={handleNext}
                   className="love-button w-full text-base"
                 >
-                  <Sparkles className="w-5 h-5 mr-2" />
-                  Create Proposal
+                  Next: Choose Theme
+                  <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
               </motion.div>
             </motion.div>
           </motion.div>
-        ) : state === 'asking' ? (
+        )}
+
+        {/* Step 2: Choose Theme */}
+        {state === 'step2' && (
+          <motion.div
+            key="step2"
+            className="min-h-screen flex flex-col items-center justify-center px-4 py-8 relative z-10"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.3 }}
+          >
+            <motion.div
+              className="love-card p-6 md:p-10 max-w-lg w-full text-center"
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              transition={{ delay: 0.1, type: "spring", stiffness: 200 }}
+            >
+              {renderStepIndicator()}
+
+              <motion.div
+                className="flex justify-center gap-2 mb-4"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+              >
+                <Heart className="w-5 h-5 text-primary/40 fill-primary/20" />
+                <Palette className="w-6 h-6 text-primary" />
+                <Heart className="w-5 h-5 text-primary/40 fill-primary/20" />
+              </motion.div>
+
+              <motion.h1
+                className="font-display text-2xl md:text-3xl font-bold text-gradient-love mb-2"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+              >
+                Choose Theme
+              </motion.h1>
+
+              <motion.p
+                className="text-muted-foreground text-sm mb-6"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.4 }}
+              >
+                Pick the perfect backdrop for your proposal ✨
+              </motion.p>
+
+              {/* Theme selector */}
+              <motion.div
+                className="mb-8"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+              >
+                <ThemeSelector selectedTheme={selectedTheme} onSelectTheme={setSelectedTheme} />
+              </motion.div>
+
+              {/* Navigation buttons */}
+              <motion.div
+                className="flex gap-3"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 }}
+              >
+                <Button
+                  onClick={handleBack}
+                  variant="outline"
+                  className="flex-1 text-base border-primary/30"
+                >
+                  <ArrowLeft className="w-5 h-5 mr-2" />
+                  Back
+                </Button>
+                <Button
+                  onClick={handleNext}
+                  className="love-button flex-1 text-base"
+                >
+                  Next: Share
+                  <ArrowRight className="w-5 h-5 ml-2" />
+                </Button>
+              </motion.div>
+            </motion.div>
+          </motion.div>
+        )}
+
+        {/* Step 3: Share Link */}
+        {state === 'step3' && (
+          <motion.div
+            key="step3"
+            className="min-h-screen flex flex-col items-center justify-center px-4 py-8 relative z-10"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.3 }}
+          >
+            <motion.div
+              className="love-card p-6 md:p-10 max-w-lg w-full text-center"
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              transition={{ delay: 0.1, type: "spring", stiffness: 200 }}
+            >
+              {renderStepIndicator()}
+
+              <motion.div
+                className="flex justify-center gap-2 mb-4"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+              >
+                <Heart className="w-5 h-5 text-primary/40 fill-primary/20" />
+                <Share2 className="w-6 h-6 text-primary" />
+                <Heart className="w-5 h-5 text-primary/40 fill-primary/20" />
+              </motion.div>
+
+              <motion.h1
+                className="font-display text-2xl md:text-3xl font-bold text-gradient-love mb-2"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+              >
+                Share Your Proposal
+              </motion.h1>
+
+              <motion.p
+                className="text-muted-foreground text-sm mb-6"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.4 }}
+              >
+                Copy this link and send it to your special someone 💌
+              </motion.p>
+
+              {/* Shareable URL */}
+              <motion.div
+                className="mb-6"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+              >
+                <div className="p-4 bg-rose-light/50 rounded-xl border border-primary/10">
+                  <p className="text-xs text-muted-foreground mb-2">Shareable Link:</p>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      type="text"
+                      readOnly
+                      value={getShareableUrl()}
+                      className="text-sm bg-background/50"
+                    />
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="shrink-0"
+                      onClick={() => {
+                        navigator.clipboard.writeText(getShareableUrl());
+                      }}
+                    >
+                      Copy
+                    </Button>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Preview card */}
+              <motion.div
+                className="p-4 bg-rose-light/30 rounded-xl border border-primary/10 mb-6"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.55 }}
+              >
+                <p className="text-xs text-muted-foreground mb-2">They'll see:</p>
+                {couplePhoto && (
+                  <div className="w-16 h-16 mx-auto mb-3 rounded-full overflow-hidden border-2 border-primary/30">
+                    <img src={couplePhoto} alt="Couple" className="w-full h-full object-cover" />
+                  </div>
+                )}
+                <p className="font-display text-lg font-semibold text-gradient-love">
+                  "{getQuestionText()}"
+                </p>
+                <p className="text-xs text-muted-foreground mt-2">
+                  Theme: {selectedTheme.charAt(0).toUpperCase() + selectedTheme.slice(1)}
+                </p>
+              </motion.div>
+
+              {/* Navigation buttons */}
+              <motion.div
+                className="flex gap-3"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 }}
+              >
+                <Button
+                  onClick={handleBack}
+                  variant="outline"
+                  className="flex-1 text-base border-primary/30"
+                >
+                  <ArrowLeft className="w-5 h-5 mr-2" />
+                  Back
+                </Button>
+                <Button
+                  onClick={handleNext}
+                  className="love-button flex-1 text-base"
+                >
+                  <Sparkles className="w-5 h-5 mr-2" />
+                  Preview Proposal
+                </Button>
+              </motion.div>
+            </motion.div>
+          </motion.div>
+        )}
+
+        {/* Asking state */}
+        {state === 'asking' && (
           <motion.div
             key="asking"
             className="min-h-screen flex flex-col items-center justify-center px-4 py-8 relative z-10"
@@ -303,7 +570,7 @@ export default function ValentineProposal() {
                 </motion.div>
 
                 {/* Escaping No button */}
-                <EscapingNoButton onEscape={handleNoEscape} />
+                <EscapingNoButton onEscape={handleNoEscape} onPlaySound={playNoEscapeSound} />
               </motion.div>
 
               {/* Subtle hint */}
@@ -331,7 +598,10 @@ export default function ValentineProposal() {
               </p>
             </motion.div>
           </motion.div>
-        ) : (
+        )}
+
+        {/* Success state */}
+        {state === 'success' && (
           <ValentineSuccess 
             key="success" 
             onPlayAgain={handlePlayAgain}
