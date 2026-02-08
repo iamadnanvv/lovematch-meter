@@ -17,9 +17,10 @@ const ESCAPE_PHRASES = [
 
 interface EscapingNoButtonProps {
   onEscape?: () => void;
+  onPlaySound?: () => void;
 }
 
-export function EscapingNoButton({ onEscape }: EscapingNoButtonProps) {
+export function EscapingNoButton({ onEscape, onPlaySound }: EscapingNoButtonProps) {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [scale, setScale] = useState(1);
   const [phraseIndex, setPhraseIndex] = useState(0);
@@ -60,8 +61,10 @@ export function EscapingNoButton({ onEscape }: EscapingNoButtonProps) {
     setPhraseIndex(prev => (prev + 1) % ESCAPE_PHRASES.length);
     setEscapeCount(prev => prev + 1);
     
+    // Play bounce sound
+    onPlaySound?.();
     onEscape?.();
-  }, [getRandomPosition, onEscape]);
+  }, [getRandomPosition, onEscape, onPlaySound]);
 
   // Handle both hover and touch
   const handleInteraction = useCallback((e: React.MouseEvent | React.TouchEvent) => {
