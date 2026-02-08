@@ -10,6 +10,7 @@ import { BackgroundThemes, ThemeSelector, ThemeType } from '@/components/valenti
 import { PhotoUpload } from '@/components/valentine/PhotoUpload';
 import { useValentineSounds } from '@/hooks/useValentineSounds';
 import { SoundToggle } from '@/components/results/SoundToggle';
+import { toast } from 'sonner';
 
 type ValentineState = 'step1' | 'step2' | 'step3' | 'asking' | 'success';
 
@@ -41,6 +42,28 @@ export default function ValentineProposal() {
     if (urlFrom) setSenderName(urlFrom);
     if (urlTo) setRecipientName(urlTo);
   }, [urlFrom, urlTo]);
+
+  // Set page meta tags for Valentine page
+  useEffect(() => {
+    document.title = recipientName 
+      ? `${recipientName}, Will You Be My Valentine? 💕`
+      : 'Will You Be My Valentine? 💕 | Love Triangle';
+    
+    // Update meta description
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute('content', 
+        recipientName 
+          ? `${senderName || 'Someone special'} has a romantic question for ${recipientName}!`
+          : 'Create a personalized Valentine proposal for your special someone!'
+      );
+    }
+    
+    // Cleanup: restore original title on unmount
+    return () => {
+      document.title = 'Love Triangle - Test Your Love Compatibility';
+    };
+  }, [recipientName, senderName]);
 
   // Cleanup sounds on unmount
   useEffect(() => {
@@ -415,6 +438,7 @@ export default function ValentineProposal() {
                       className="shrink-0"
                       onClick={() => {
                         navigator.clipboard.writeText(getShareableUrl());
+                        toast.success('Link copied to clipboard! 💕');
                       }}
                     >
                       Copy
