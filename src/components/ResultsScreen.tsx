@@ -17,6 +17,17 @@ import { SoundToggle } from '@/components/results/SoundToggle';
 import { RelationshipBadge } from '@/components/results/RelationshipBadge';
 import { PhotoScoreCard } from '@/components/results/PhotoScoreCard';
 import { TruthOrDare } from '@/components/results/TruthOrDare';
+// New illogical/funny features
+import { LoveFortuneCookie } from '@/components/results/LoveFortuneCookie';
+import { JealousyOMeter } from '@/components/results/JealousyOMeter';
+import { BreakupSimulator } from '@/components/results/BreakupSimulator';
+import { ExcuseGenerator } from '@/components/results/ExcuseGenerator';
+import { LoveProbabilityCalculator } from '@/components/results/LoveProbabilityCalculator';
+import { ArgumentPredictor } from '@/components/results/ArgumentPredictor';
+import { LoveSongLyrics } from '@/components/results/LoveSongLyrics';
+import { PetNameGenerator } from '@/components/results/PetNameGenerator';
+import { TimeCapsulePredictions } from '@/components/results/TimeCapsulePredictions';
+import { WhosMoreLikelyTo } from '@/components/results/WhosMoreLikelyTo';
 
 interface ResultsScreenProps {
   player1Name: string;
@@ -306,6 +317,44 @@ export function ResultsScreen({
 
             {/* Relationship Badge */}
             <RelationshipBadge player1Name={player1Name} player2Name={player2Name} score={score} />
+
+            {/* === FUNNY & ILLOGICAL FEATURES SECTION === */}
+            <div className="pt-4 border-t border-border">
+              <p className="text-center text-sm text-muted-foreground mb-3">
+                ✨ Fun & Silly Features ✨
+              </p>
+              
+              {/* Love Fortune Cookie */}
+              <LoveFortuneCookie player1Name={player1Name} player2Name={player2Name} score={score} />
+              
+              {/* Pet Name Generator */}
+              <PetNameGenerator player1Name={player1Name} player2Name={player2Name} score={score} />
+              
+              {/* Who's More Likely To */}
+              <WhosMoreLikelyTo player1Name={player1Name} player2Name={player2Name} score={score} />
+              
+              {/* Jealousy-O-Meter */}
+              <JealousyOMeter player1Name={player1Name} player2Name={player2Name} score={score} />
+              
+              {/* Breakup Simulator */}
+              <BreakupSimulator player1Name={player1Name} player2Name={player2Name} score={score} />
+              
+              {/* Excuse Generator */}
+              <ExcuseGenerator player1Name={player1Name} player2Name={player2Name} />
+              
+              {/* Love Probability Calculator */}
+              <LoveProbabilityCalculator player1Name={player1Name} player2Name={player2Name} score={score} />
+              
+              {/* Argument Predictor */}
+              <ArgumentPredictor player1Name={player1Name} player2Name={player2Name} score={score} />
+              
+              {/* Love Song Lyrics */}
+              <LoveSongLyrics player1Name={player1Name} player2Name={player2Name} score={score} />
+              
+              {/* Time Capsule Predictions */}
+              <TimeCapsulePredictions player1Name={player1Name} player2Name={player2Name} score={score} />
+            </div>
+            {/* === END FUNNY FEATURES === */}
 
             {/* Generate Image Card Button */}
             <motion.button
