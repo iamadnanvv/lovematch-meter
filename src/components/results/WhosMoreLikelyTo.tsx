@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Users, RotateCcw, Trophy } from 'lucide-react';
+import { ShareButton } from './ShareButton';
 import {
   Dialog,
   DialogContent,
@@ -236,6 +237,10 @@ export function WhosMoreLikelyTo({ player1Name, player2Name, score }: WhosMoreLi
                       : `${player2Name} takes the crown for most likely! 👑`
                   }
                 </p>
+
+                <ShareButton
+                  getText={() => `🎯 Who's More Likely To... Results!\n\n${player1Name}: ${player1Votes} votes\n${player2Name}: ${player2Votes} votes\n\n${player1Votes === player2Votes ? "It's a tie! 🤝" : player1Votes > player2Votes ? `${player1Name} wins! 😅` : `${player2Name} wins! 👑`}\n\n💕 Play at Love Triangle!`}
+                />
 
                 <motion.button
                   className="love-button-outline w-full"

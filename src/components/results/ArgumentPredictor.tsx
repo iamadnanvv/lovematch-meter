@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Swords, Shield, RefreshCw } from 'lucide-react';
+import { ShareButton } from './ShareButton';
 import {
   Dialog,
   DialogContent,
@@ -177,6 +178,10 @@ export function ArgumentPredictor({ player1Name, player2Name, score }: ArgumentP
               Predict More Arguments
             </span>
           </motion.button>
+
+          <ShareButton
+            getText={() => `⚔️ Our Predicted Arguments:\n\n${predictions.map(p => `${p.emoji} ${p.prediction}\n💡 Tip: ${p.tip}`).join('\n\n')}\n\n💕 Predicted by Love Triangle!`}
+          />
 
           <p className="text-xs text-center text-muted-foreground/60 italic">
             Remember: The couple that argues together, stays together... mostly 💕

@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Calculator, RefreshCw } from 'lucide-react';
+import { ShareButton } from './ShareButton';
 import {
   Dialog,
   DialogContent,
@@ -163,6 +164,10 @@ export function LoveProbabilityCalculator({ player1Name, player2Name, score }: L
               Recalculate Probabilities
             </span>
           </motion.button>
+
+          <ShareButton
+            getText={() => `📊 Love Probability Calculator Results:\n\n${stats.map(s => `${s.emoji} ${s.text}`).join('\n')}\n\n💕 Calculated by Love Triangle!`}
+          />
 
           <p className="text-xs text-center text-muted-foreground/60">
             Disclaimer: These statistics have a 0% correlation with reality

@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HeartCrack, Heart, RefreshCw } from 'lucide-react';
+import { ShareButton } from './ShareButton';
 import {
   Dialog,
   DialogContent,
@@ -178,17 +179,23 @@ export function BreakupSimulator({ player1Name, player2Name, score }: BreakupSim
                     </span>
                   </motion.button>
                   
-                  <motion.button
-                    className="love-button-outline w-full"
-                    onClick={handleRefresh}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <span className="flex items-center justify-center gap-2">
-                      <RefreshCw className="w-4 h-4" />
-                      See Another Scenario
-                    </span>
-                  </motion.button>
+                  <div className="flex gap-3">
+                    <ShareButton
+                      variant="compact"
+                      getText={() => `💔 The Breakup Simulator predicts ${player1Name} & ${player2Name} will break up over "${scenario.cause}"!\n\n${scenario.dramatic}\n\nJust kidding! 💕 Try yours at Love Triangle!`}
+                    />
+                    <motion.button
+                      className="love-button-outline flex-1"
+                      onClick={handleRefresh}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <span className="flex items-center justify-center gap-2">
+                        <RefreshCw className="w-4 h-4" />
+                        Another
+                      </span>
+                    </motion.button>
+                  </div>
                 </motion.div>
               </motion.div>
             ) : (

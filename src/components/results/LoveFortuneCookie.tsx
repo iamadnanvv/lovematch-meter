@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Cookie, Sparkles } from 'lucide-react';
+import { ShareButton } from './ShareButton';
 import {
   Dialog,
   DialogContent,
@@ -178,20 +179,28 @@ export function LoveFortuneCookie({ player1Name, player2Name, score }: LoveFortu
                   Lucky numbers: {Math.floor(Math.random() * 50) + 1}, {Math.floor(Math.random() * 50) + 1}, {score}
                 </motion.p>
 
-                <motion.button
-                  className="love-button-outline px-6 py-2"
-                  onClick={() => {
-                    setIsCracked(false);
-                    setFortune('');
-                  }}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                <motion.div
+                  className="flex gap-3"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.7 }}
                 >
-                  🥠 Crack Another Cookie
-                </motion.button>
+                  <ShareButton
+                    variant="compact"
+                    getText={() => `🥠 My Love Fortune Cookie says:\n"${fortune}"\n\n💕 Get yours at Love Triangle!`}
+                  />
+                  <motion.button
+                    className="love-button-outline flex-1"
+                    onClick={() => {
+                      setIsCracked(false);
+                      setFortune('');
+                    }}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    🥠 Crack Another
+                  </motion.button>
+                </motion.div>
               </motion.div>
             )}
           </AnimatePresence>

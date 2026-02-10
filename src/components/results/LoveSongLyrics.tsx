@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Music, RefreshCw, Copy, Check } from 'lucide-react';
+import { ShareButton } from './ShareButton';
 import {
   Dialog,
   DialogContent,
@@ -188,6 +189,10 @@ export function LoveSongLyrics({ player1Name, player2Name, score }: LoveSongLyri
               </span>
             </motion.button>
           </div>
+
+          <ShareButton
+            getText={() => `🎵 Our Love Song (${GENRE_INFO[genre].label}):\n\n${lyrics}\n\n💕 Made with Love Triangle!`}
+          />
 
           <p className="text-xs text-center text-muted-foreground italic">
             🎤 Chart-topping hit guaranteed* (*not actually guaranteed)
