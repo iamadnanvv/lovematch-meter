@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Clock, ChevronRight } from 'lucide-react';
+import { ShareButton } from './ShareButton';
 import {
   Dialog,
   DialogContent,
