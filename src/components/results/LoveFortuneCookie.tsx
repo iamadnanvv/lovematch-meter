@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Cookie, Sparkles } from 'lucide-react';
+import { ShareButton } from './ShareButton';
 import {
   Dialog,
   DialogContent,
