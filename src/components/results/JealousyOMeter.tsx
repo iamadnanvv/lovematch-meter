@@ -165,18 +165,24 @@ export function JealousyOMeter({ player1Name, player2Name, score }: JealousyOMet
             </motion.div>
           </AnimatePresence>
 
-          {/* Refresh Button */}
-          <motion.button
-            className="love-button-outline w-full"
-            onClick={handleRefresh}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <span className="flex items-center justify-center gap-2">
-              <RefreshCw className="w-4 h-4" />
-              Try Another Celebrity
-            </span>
-          </motion.button>
+          {/* Actions */}
+          <div className="flex gap-3">
+            <ShareButton
+              variant="compact"
+              getText={() => `😏 Jealousy-O-Meter says ${player2Name} is ${results.player2Score}% compatible with ${results.celebrity.name}! ${player1Name} only got ${results.player1Score}%! 😱\n\n💕 Try yours at Love Triangle!`}
+            />
+            <motion.button
+              className="love-button-outline flex-1"
+              onClick={handleRefresh}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <span className="flex items-center justify-center gap-2">
+                <RefreshCw className="w-4 h-4" />
+                Try Another
+              </span>
+            </motion.button>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
