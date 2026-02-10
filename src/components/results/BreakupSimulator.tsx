@@ -196,6 +196,7 @@ export function BreakupSimulator({ player1Name, player2Name, score }: BreakupSim
                       </span>
                     </motion.button>
                   </div>
+                </motion.div>
               </motion.div>
             ) : (
               <motion.div
