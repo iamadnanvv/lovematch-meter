@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Music, RefreshCw, Copy, Check } from 'lucide-react';
+import { ShareButton } from './ShareButton';
 import {
   Dialog,
   DialogContent,
