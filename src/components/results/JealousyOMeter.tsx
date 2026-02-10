@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Star, RefreshCw, AlertTriangle } from 'lucide-react';
+import { ShareButton } from './ShareButton';
 import {
   Dialog,
   DialogContent,
