@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, RefreshCw, Sparkles } from 'lucide-react';
 import { ShareButton } from './ShareButton';
+import { useFeatureSounds } from '@/hooks/useFeatureSounds';
 import {
   Dialog,
   DialogContent,
@@ -64,10 +65,13 @@ export function PetNameGenerator({ player1Name, player2Name, score }: PetNameGen
     };
   }, [intensity, key]);
 
+  const { play } = useFeatureSounds();
+
   const handleEscalate = () => {
     if (intensity < 4) {
       setIntensity(prev => prev + 1);
       setKey(prev => prev + 1);
+      play('escalate');
     } else {
       setIntensity(1);
       setKey(prev => prev + 1);

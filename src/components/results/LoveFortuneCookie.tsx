@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Cookie, Sparkles } from 'lucide-react';
 import { ShareButton } from './ShareButton';
+import { useFeatureSounds } from '@/hooks/useFeatureSounds';
 import {
   Dialog,
   DialogContent,
@@ -57,11 +58,14 @@ export function LoveFortuneCookie({ player1Name, player2Name, score }: LoveFortu
     return LOW_SCORE_FORTUNES;
   };
 
+  const { play } = useFeatureSounds();
+
   const handleCrack = () => {
     const fortunes = getFortunes();
     const randomFortune = fortunes[Math.floor(Math.random() * fortunes.length)];
     setFortune(randomFortune);
     setIsCracked(true);
+    play('crack');
   };
 
   const handleClose = () => {

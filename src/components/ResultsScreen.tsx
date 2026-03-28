@@ -1,4 +1,5 @@
 import { useMemo, useState, useCallback, useEffect } from 'react';
+import { isValentineSeason } from '@/lib/seasonal';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, Share2, RotateCcw, Sparkles, Download, Image, X, Loader2 } from 'lucide-react';
 import { getCompatibilityLevel, questionCategories } from '@/data/questions';
@@ -51,6 +52,7 @@ export function ResultsScreen({
   const score = Math.round((matchCount / totalQuestions) * 100);
   const compatibility = getCompatibilityLevel(score)
   const [showImageModal, setShowImageModal] = useState(false);
+  const [funFeaturesOpen, setFunFeaturesOpen] = useState(false);
   
   const celebrationSounds = useCelebrationSounds();
   
@@ -318,41 +320,46 @@ export function ResultsScreen({
             {/* Relationship Badge */}
             <RelationshipBadge player1Name={player1Name} player2Name={player2Name} score={score} />
 
-            {/* === FUNNY & ILLOGICAL FEATURES SECTION === */}
+            {/* === FUNNY & ILLOGICAL FEATURES SECTION (Accordion) === */}
             <div className="pt-4 border-t border-border">
-              <p className="text-center text-sm text-muted-foreground mb-3">
-                ✨ Fun & Silly Features ✨
-              </p>
+              <button
+                onClick={() => setFunFeaturesOpen(prev => !prev)}
+                className="w-full flex items-center justify-between text-sm text-muted-foreground mb-3 px-1 group"
+              >
+                <span>✨ Fun & Silly Features ✨</span>
+                <motion.span
+                  animate={{ rotate: funFeaturesOpen ? 180 : 0 }}
+                  transition={{ duration: 0.25 }}
+                  className="text-lg"
+                >
+                  ▾
+                </motion.span>
+              </button>
               
-              {/* Love Fortune Cookie */}
-              <LoveFortuneCookie player1Name={player1Name} player2Name={player2Name} score={score} />
-              
-              {/* Pet Name Generator */}
-              <PetNameGenerator player1Name={player1Name} player2Name={player2Name} score={score} />
-              
-              {/* Who's More Likely To */}
-              <WhosMoreLikelyTo player1Name={player1Name} player2Name={player2Name} score={score} />
-              
-              {/* Jealousy-O-Meter */}
-              <JealousyOMeter player1Name={player1Name} player2Name={player2Name} score={score} />
-              
-              {/* Breakup Simulator */}
-              <BreakupSimulator player1Name={player1Name} player2Name={player2Name} score={score} />
-              
-              {/* Excuse Generator */}
-              <ExcuseGenerator player1Name={player1Name} player2Name={player2Name} />
-              
-              {/* Love Probability Calculator */}
-              <LoveProbabilityCalculator player1Name={player1Name} player2Name={player2Name} score={score} />
-              
-              {/* Argument Predictor */}
-              <ArgumentPredictor player1Name={player1Name} player2Name={player2Name} score={score} />
-              
-              {/* Love Song Lyrics */}
-              <LoveSongLyrics player1Name={player1Name} player2Name={player2Name} score={score} />
-              
-              {/* Time Capsule Predictions */}
-              <TimeCapsulePredictions player1Name={player1Name} player2Name={player2Name} score={score} />
+              <AnimatePresence initial={false}>
+                {funFeaturesOpen && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.3, ease: "easeInOut" }}
+                    className="overflow-hidden"
+                  >
+                    <div className="space-y-0">
+                      <LoveFortuneCookie player1Name={player1Name} player2Name={player2Name} score={score} />
+                      <PetNameGenerator player1Name={player1Name} player2Name={player2Name} score={score} />
+                      <WhosMoreLikelyTo player1Name={player1Name} player2Name={player2Name} score={score} />
+                      <JealousyOMeter player1Name={player1Name} player2Name={player2Name} score={score} />
+                      <BreakupSimulator player1Name={player1Name} player2Name={player2Name} score={score} />
+                      <ExcuseGenerator player1Name={player1Name} player2Name={player2Name} />
+                      <LoveProbabilityCalculator player1Name={player1Name} player2Name={player2Name} score={score} />
+                      <ArgumentPredictor player1Name={player1Name} player2Name={player2Name} score={score} />
+                      <LoveSongLyrics player1Name={player1Name} player2Name={player2Name} score={score} />
+                      <TimeCapsulePredictions player1Name={player1Name} player2Name={player2Name} score={score} />
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
             {/* === END FUNNY FEATURES === */}
 
@@ -369,8 +376,10 @@ export function ResultsScreen({
               </span>
             </motion.button>
 
-            {/* Valentine Letter */}
-            <ValentineLetter player1Name={player1Name} player2Name={player2Name} score={score} />
+            {/* Valentine Letter – seasonal */}
+            {isValentineSeason() && (
+              <ValentineLetter player1Name={player1Name} player2Name={player2Name} score={score} />
+            )}
 
             {/* Play with Friend */}
             <PlayWithFriend
