@@ -1,19 +1,25 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Heart, Users, HeartHandshake } from "lucide-react";
 import logoImage from "@/assets/love-triangle-logo.png";
 import { DonationTrigger } from "./DonationPopup";
+import { isValentineSeason } from "@/lib/seasonal";
 
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
 
-  const navLinks = [
-    { href: "/", label: "Play", icon: Heart },
-    { href: "/valentine", label: "Valentine", icon: Heart },
-    { href: "/creators", label: "Creator Portal", icon: Users },
-  ];
+  const navLinks = useMemo(() => {
+    const links = [
+      { href: "/", label: "Play", icon: Heart },
+      { href: "/creators", label: "Creator Portal", icon: Users },
+    ];
+    if (isValentineSeason()) {
+      links.splice(1, 0, { href: "/valentine", label: "Valentine", icon: Heart });
+    }
+    return links;
+  }, []);
 
   const isActive = (path: string) => location.pathname === path;
 
