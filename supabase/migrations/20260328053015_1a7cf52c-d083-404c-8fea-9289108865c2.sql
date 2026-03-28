@@ -1,0 +1,1 @@
+CREATE TABLE IF NOT EXISTS public.supporter_events (id uuid PRIMARY KEY DEFAULT gen_random_uuid(), ip_hash text NOT NULL, ua_hash text NOT NULL, created_at timestamptz NOT NULL DEFAULT now()); ALTER TABLE public.supporter_events ENABLE ROW LEVEL SECURITY;
