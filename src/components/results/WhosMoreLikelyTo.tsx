@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Users, RotateCcw, Trophy } from 'lucide-react';
 import { ShareButton } from './ShareButton';
+import { useFeatureSounds } from '@/hooks/useFeatureSounds';
 import {
   Dialog,
   DialogContent,
@@ -54,9 +55,12 @@ export function WhosMoreLikelyTo({ player1Name, player2Name, score }: WhosMoreLi
   const currentScenario = shuffledScenarios[currentIndex];
   const isComplete = currentIndex >= shuffledScenarios.length;
 
+  const { play } = useFeatureSounds();
+
   const handleVote = (player: 1 | 2) => {
     setCurrentVote(player);
     setShowResult(true);
+    play('vote');
     
     if (player === 1) {
       setPlayer1Votes(prev => prev + 1);
@@ -68,7 +72,13 @@ export function WhosMoreLikelyTo({ player1Name, player2Name, score }: WhosMoreLi
   const handleNext = () => {
     setShowResult(false);
     setCurrentVote(null);
-    setCurrentIndex(prev => prev + 1);
+    setCurrentIndex(prev => {
+      const next = prev + 1;
+      if (next >= shuffledScenarios.length) {
+        play('complete');
+      }
+      return next;
+    });
   };
 
   const handleReset = () => {
