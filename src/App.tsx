@@ -11,9 +11,6 @@ import { Footer } from "@/components/Footer";
 import { Navigation } from "@/components/Navigation";
 import { DonationPopup } from "@/components/DonationPopup";
 import { isValentineSeason } from "@/lib/seasonal";
-import { Footer } from "@/components/Footer";
-import { Navigation } from "@/components/Navigation";
-import { DonationPopup } from "@/components/DonationPopup";
 
 const queryClient = new QueryClient();
 
