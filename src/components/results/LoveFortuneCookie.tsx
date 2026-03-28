@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Cookie, Sparkles } from 'lucide-react';
 import { ShareButton } from './ShareButton';
 import { useFeatureSounds } from '@/hooks/useFeatureSounds';
+import {
   Dialog,
   DialogContent,
   DialogHeader,
