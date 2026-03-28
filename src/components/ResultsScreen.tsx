@@ -1,4 +1,5 @@
 import { useMemo, useState, useCallback, useEffect } from 'react';
+import { isValentineSeason } from '@/lib/seasonal';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, Share2, RotateCcw, Sparkles, Download, Image, X, Loader2 } from 'lucide-react';
 import { getCompatibilityLevel, questionCategories } from '@/data/questions';
@@ -375,8 +376,10 @@ export function ResultsScreen({
               </span>
             </motion.button>
 
-            {/* Valentine Letter */}
-            <ValentineLetter player1Name={player1Name} player2Name={player2Name} score={score} />
+            {/* Valentine Letter – seasonal */}
+            {isValentineSeason() && (
+              <ValentineLetter player1Name={player1Name} player2Name={player2Name} score={score} />
+            )}
 
             {/* Play with Friend */}
             <PlayWithFriend
