@@ -12,7 +12,7 @@ const corsHeaders = {
  *
  * Privacy: We hash IP + UA with SHA-256; we never store raw identifiers.
  */
-serve(async (req) => {
+Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
